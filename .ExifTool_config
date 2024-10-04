@@ -1,0 +1,14 @@
+%Image::ExifTool::UserDefined = (
+    'Image::ExifTool::XMP::Main' => {
+        MidjourneyInstructions => {
+            Writable => 'string',
+            Groups => { 0 => 'XMP', 1 => 'XMP-xmp', 2 => 'Image' },
+        },
+        TestTag => {
+            Writable => 'string',
+            Groups => { 0 => 'XMP', 1 => 'XMP-xmp', 2 => 'Image' },
+        },
+    },
+);
+
+1; #end
