@@ -1,6 +1,9 @@
-const { exec } = require("child_process");
-const util = require("util");
-const path = require("path");
+// Utility to check metadata of images
+// Keeping it here for now, but may move to a separate package later
+
+const { exec } = require('child_process');
+const util = require('util');
+const path = require('path');
 
 const execPromise = util.promisify(exec);
 
@@ -10,25 +13,25 @@ async function checkMetadata(filePath) {
       `exiftool -json -Author -Comment -MidjourneyInstructions "${filePath}"`
     );
     if (stderr) {
-      console.error("Error:", stderr);
+      console.error('Error:', stderr);
       return;
     }
 
     const metadata = JSON.parse(stdout)[0];
 
-    console.log("Metadata for:", path.basename(filePath));
-    console.log("Author:", metadata.Author);
-    console.log("Comment:", metadata.Comment);
-    console.log("MidjourneyInstructions:", metadata.MidjourneyInstructions);
+    console.log('Metadata for:', path.basename(filePath));
+    console.log('Author:', metadata.Author);
+    console.log('Comment:', metadata.Comment);
+    console.log('MidjourneyInstructions:', metadata.MidjourneyInstructions);
   } catch (error) {
-    console.error("Error executing exiftool:", error.message);
+    console.error('Error executing exiftool:', error.message);
   }
 }
 
 // Usage
 const imagePath = process.argv[2];
 if (!imagePath) {
-  console.error("Please provide an image path as an argument");
+  console.error('Please provide an image path as an argument');
   process.exit(1);
 }
 

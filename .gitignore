@@ -1,5 +1,7 @@
+.env
 dist
 downloads
+index.0.js
 input
 input2
 LIKES
