@@ -2,21 +2,39 @@
   "name": "awake-image-optimizer",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "watch": "nodemon --exec ts-node src/index.ts",
+    "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.7.7",
     "dist-exiftool": "^10.53.0",
-    "lodash": "^4.17.21",
+    "dotenv": "^16.4.5",
     "node-exiftool": "^2.3.0",
-    "node-fetch": "^3.3.2",
-    "p-limit": "^6.1.0",
+    "p-limit": "^3.1.0",
     "puppeteer": "^23.5.0",
-    "sharp": "^0.33.5",
-    "user-agents": "^1.1.325"
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "@types/puppeteer": "^7.0.4",
+    "@types/sharp": "^0.32.0",
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "@typescript-eslint/parser": "^8.8.0",
+    "eslint": "^9.12.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "nodemon": "^3.1.7",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.6.2"
   }
 }
