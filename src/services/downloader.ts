@@ -19,23 +19,21 @@ export async function downloadAndProcessImage(job: Job): Promise<boolean> {
 
     if (await fileExists(filePath)) {
       console.log(`File already exists: ${fileName}`);
-      return true;
+    } else {
+      const imageBuffer = await makeRequest(imageUrl);
+
+      if (!imageBuffer || imageBuffer.length === 0) {
+        console.error(`Failed to download image for job ${job.id}`);
+        return false;
+      }
+
+      await writeFile(filePath, imageBuffer);
     }
-
-    const imageBuffer = await makeRequest(imageUrl);
-
-    if (!imageBuffer || imageBuffer.length === 0) {
-      console.error(`Failed to download image for job ${job.id}`);
-      return false;
-    }
-
-    await writeFile(filePath, imageBuffer);
 
     const originalMetadataResult = await embedMetadata(filePath, job);
     if (!originalMetadataResult) {
       console.warn(`Failed to embed metadata for original image of job ${job.id}`);
     }
-
     await processImage(filePath, job);
 
     return true;
