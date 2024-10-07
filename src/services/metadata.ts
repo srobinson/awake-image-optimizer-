@@ -46,6 +46,7 @@ export async function embedMetadata(filePath: string, job: Job): Promise<boolean
 }
 
 export async function generateMetadataJSON(): Promise<void> {
+  let count = 0;
   try {
     const originalDir = path.join(config.downloadDir, 'original');
     const optimizedDir = path.join(config.downloadDir, 'optimized');
@@ -89,8 +90,11 @@ export async function generateMetadataJSON(): Promise<void> {
           };
         }
 
+        count++;
+
         return {
           filename: file,
+          index: count,
           author: metadata.Author,
           comment: metadata.Comment,
           midjourneyInstructions: metadata.Description?.replace('MidjourneyInstructions: ', ''),
@@ -101,7 +105,9 @@ export async function generateMetadataJSON(): Promise<void> {
 
     const galleryData = {
       totalImages: imagesData.length,
-      images: imagesData,
+      images: imagesData.sort((a, b) => {
+        return a.index - b.index;
+      }),
     };
 
     const outputPath = path.join(config.downloadDir, 'gallery.json');
