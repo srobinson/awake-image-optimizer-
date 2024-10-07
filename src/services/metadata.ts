@@ -54,53 +54,56 @@ export async function generateMetadataJSON(): Promise<void> {
     const imageFiles = files.filter((file) =>
       ['.png', '.jpg', '.jpeg'].includes(path.extname(file).toLowerCase())
     );
+    const markedFiles = await fs.readFile('./.marked');
 
     const imagesData = await Promise.all(
-      imageFiles.map(async (file) => {
-        const originalFilePath = path.join(originalDir, file);
-        const { stdout } = await execPromise(`exiftool -json "${originalFilePath}"`);
-        const metadata = JSON.parse(stdout)[0];
+      imageFiles
+        .filter((file) => !markedFiles.includes(file))
+        .map(async (file) => {
+          const originalFilePath = path.join(originalDir, file);
+          const { stdout } = await execPromise(`exiftool -json "${originalFilePath}"`);
+          const metadata = JSON.parse(stdout)[0];
 
-        const variants: Record<string, { width: number; height: number; filename: string }> = {};
+          const variants: Record<string, { width: number; height: number; filename: string }> = {};
 
-        // Add original variant
-        const originalOptimizedPath = path.join(
-          optimizedDir,
-          path.basename(file, path.extname(file)) + '.jpg'
-        );
-        const originalImageInfo = await sharp(originalOptimizedPath).metadata();
-        variants.original = {
-          width: originalImageInfo.width!,
-          height: originalImageInfo.height!,
-          filename: path.basename(originalOptimizedPath),
-        };
-
-        // Add other variants
-        for (const width of config.optimizedWidths) {
-          const variantPath = path.join(
+          // Add original variant
+          const originalOptimizedPath = path.join(
             optimizedDir,
-            width.toString(),
             path.basename(file, path.extname(file)) + '.jpg'
           );
-          const variantInfo = await sharp(variantPath).metadata();
-          variants[width.toString()] = {
-            width: variantInfo.width!,
-            height: variantInfo.height!,
-            filename: path.basename(variantPath),
+          const originalImageInfo = await sharp(originalOptimizedPath).metadata();
+          variants.original = {
+            width: originalImageInfo.width!,
+            height: originalImageInfo.height!,
+            filename: path.basename(originalOptimizedPath),
           };
-        }
 
-        count++;
+          // Add other variants
+          for (const width of config.optimizedWidths) {
+            const variantPath = path.join(
+              optimizedDir,
+              width.toString(),
+              path.basename(file, path.extname(file)) + '.jpg'
+            );
+            const variantInfo = await sharp(variantPath).metadata();
+            variants[width.toString()] = {
+              width: variantInfo.width!,
+              height: variantInfo.height!,
+              filename: path.basename(variantPath),
+            };
+          }
 
-        return {
-          filename: file,
-          index: count,
-          author: metadata.Author,
-          comment: metadata.Comment,
-          midjourneyInstructions: metadata.Description?.replace('MidjourneyInstructions: ', ''),
-          variants,
-        };
-      })
+          count++;
+
+          return {
+            filename: file,
+            index: count,
+            author: metadata.Author,
+            comment: metadata.Comment,
+            midjourneyInstructions: metadata.Description?.replace('MidjourneyInstructions: ', ''),
+            variants,
+          };
+        })
     );
 
     const galleryData = {
